@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
 
 // Mock data for issue categories
 const issueCategories = [
@@ -71,7 +72,7 @@ export default function ReportIssuePage() {
         <CardHeader>
           <CardTitle>Report an Issue</CardTitle>
           <CardDescription>
-            Provide details about the issue you've encountered in your
+            Provide details about the issue you&apos;ve encountered in your
             community.
           </CardDescription>
         </CardHeader>
@@ -149,7 +150,7 @@ export default function ReportIssuePage() {
                 </Button>
                 {imagePreview ? (
                   <div className="relative w-20 h-20">
-                    <img
+                    <Image
                       src={imagePreview}
                       alt="Issue preview"
                       className="w-full h-full object-cover rounded"
