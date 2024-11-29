@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useUser } from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import {
   ChevronRight,
@@ -46,30 +46,33 @@ const IssueCard = ({ issue, onIssueUpdate }) => {
   const handleVote = async (voteType) => {
     try {
       const response = await fetch(`/api/issues/${issue._id}/vote`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ voteType }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to record vote');
+        throw new Error(error.message || "Failed to record vote");
       }
 
       toast({
         title: "Vote Recorded",
-        description: `You've ${voteType === "up" ? "supported" : "opposed"} this issue.`,
+        description: `You've ${
+          voteType === "up" ? "supported" : "opposed"
+        } this issue.`,
       });
 
       // Notify parent to refresh issues
       onIssueUpdate();
     } catch (error) {
-      console.error('Error recording vote:', error);
+      console.error("Error recording vote:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to record vote. Please try again later.",
+        description:
+          error.message || "Failed to record vote. Please try again later.",
         variant: "destructive",
       });
     }
@@ -168,20 +171,21 @@ export default function IssuesPage() {
   const fetchIssues = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/issues');
+      const response = await fetch("/api/issues");
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to fetch issues');
+        throw new Error(error.message || "Failed to fetch issues");
       }
 
       const data = await response.json();
       setIssues(data.issues || []);
     } catch (error) {
-      console.error('Error fetching issues:', error);
+      console.error("Error fetching issues:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to load issues. Please try again later.",
+        description:
+          error.message || "Failed to load issues. Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -231,7 +235,9 @@ export default function IssuesPage() {
   if (!isSignedIn) {
     return (
       <div className="text-center py-10">
-        <h2 className="text-2xl font-bold mb-4">Please sign in to view issues</h2>
+        <h2 className="text-2xl font-bold mb-4">
+          Please sign in to view issues
+        </h2>
         <SignInButton mode="modal">
           <Button>Sign In</Button>
         </SignInButton>
@@ -268,7 +274,9 @@ export default function IssuesPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="All">All Categories</SelectItem>
-                    <SelectItem value="Infrastructure">Infrastructure</SelectItem>
+                    <SelectItem value="Infrastructure">
+                      Infrastructure
+                    </SelectItem>
                     <SelectItem value="Public Safety">Public Safety</SelectItem>
                     <SelectItem value="Community Services">
                       Community Services
@@ -278,7 +286,9 @@ export default function IssuesPage() {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                  onClick={() =>
+                    setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                  }
                 >
                   {sortOrder === "asc" ? (
                     <SortAsc className="h-4 w-4" />
@@ -301,11 +311,13 @@ export default function IssuesPage() {
                 <TabsContent key={tab} value={tab}>
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {filteredAndSortedIssues
-                      .filter(issue =>
-                        tab === "all" ||
-                        (tab === "open" && issue.status === "Open") ||
-                        (tab === "in-progress" && issue.status === "In Progress") ||
-                        (tab === "resolved" && issue.status === "Resolved")
+                      .filter(
+                        (issue) =>
+                          tab === "all" ||
+                          (tab === "open" && issue.status === "Open") ||
+                          (tab === "in-progress" &&
+                            issue.status === "In Progress") ||
+                          (tab === "resolved" && issue.status === "Resolved")
                       )
                       .map((issue) => (
                         <IssueCard
