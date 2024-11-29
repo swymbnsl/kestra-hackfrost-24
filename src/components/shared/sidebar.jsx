@@ -37,7 +37,7 @@ export default function Sidebar() {
           height={20}
           alt="Picture of the author"
         />
-        <span className="text-lg font-semibold text-white">CivicPulse</span>
+        <span className="text-lg font-semibold text-white">AutoComm</span>
       </div>
       <nav className="flex-1 space-y-2">
         <Link
