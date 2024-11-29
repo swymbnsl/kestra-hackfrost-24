@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   MessageCircle,
   Settings,
+  TriangleAlert,
   Users,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,6 +25,9 @@ export default function Sidebar() {
     return null;
   }
 
+  const navSelectedStyles = "bg-zinc-800 px-3 py-2 text-white";
+  const navUnselectedStyles = "bg-transparent px-3 py-2 text-zinc-400";
+
   return (
     <div className="hidden w-64 min-h-screen flex-col bg-zinc-900 p-4 md:flex">
       <div className="flex items-center gap-2 px-2 py-4">
@@ -37,29 +41,48 @@ export default function Sidebar() {
       </div>
       <nav className="flex-1 space-y-2">
         <Link
-          href="#"
-          className="flex items-center gap-3 rounded-lg bg-zinc-800 px-3 py-2 text-white transition-colors hover:text-zinc-200"
+          href="/dashboard"
+          className={` ${
+            pathname == "/dashboard" ? navSelectedStyles : navUnselectedStyles
+          } flex items-center gap-3 rounded-lg transition-colors hover:text-zinc-200`}
         >
           <LayoutDashboard className="h-5 w-5" />
           Dashboard
         </Link>
         <Link
-          href="#"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-400 transition-colors hover:text-zinc-200"
+          href="/report-issue"
+          className={` ${
+            pathname == "/report-issue"
+              ? navSelectedStyles
+              : navUnselectedStyles
+          } flex items-center gap-3 rounded-lg transition-colors hover:text-zinc-200`}
+        >
+          <TriangleAlert className="h-5 w-5" />
+          Report Issue
+        </Link>
+        <Link
+          href="/issues"
+          className={` ${
+            pathname == "/issues" ? navSelectedStyles : navUnselectedStyles
+          } flex items-center gap-3 rounded-lg transition-colors hover:text-zinc-200`}
         >
           <FileText className="h-5 w-5" />
           Issues
         </Link>
         <Link
-          href="#"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-400 transition-colors hover:text-zinc-200"
+          href="/feedback"
+          className={` ${
+            pathname == "/feedback" ? navSelectedStyles : navUnselectedStyles
+          } flex items-center gap-3 rounded-lg transition-colors hover:text-zinc-200`}
         >
           <MessageCircle className="h-5 w-5" />
           Feedback
         </Link>
         <Link
-          href="#"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-400 transition-colors hover:text-zinc-200"
+          href="/community"
+          className={` ${
+            pathname == "/community" ? navSelectedStyles : navUnselectedStyles
+          } flex items-center gap-3 rounded-lg transition-colors hover:text-zinc-200`}
         >
           <Users className="h-5 w-5" />
           Community
