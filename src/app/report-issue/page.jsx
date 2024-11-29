@@ -66,7 +66,7 @@ export default function ReportIssuePage() {
   };
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container m-auto p-6">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle>Report an Issue</CardTitle>
