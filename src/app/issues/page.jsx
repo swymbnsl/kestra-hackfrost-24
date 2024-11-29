@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import {
   ChevronRight,
@@ -38,74 +39,40 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 
-// Mock data for reported issues
-const mockIssues = [
-  {
-    id: 1,
-    title: "Pothole on Main Street",
-    status: "Open",
-    description: "Large pothole causing traffic issues",
-    location: "123 Main St",
-    category: "Infrastructure",
-    createdAt: "2023-11-28",
-    inPolling: true,
-    votes: { up: 15, down: 3 },
-  },
-  {
-    id: 2,
-    title: "Broken Streetlight",
-    status: "In Progress",
-    description: "Streetlight not working at night",
-    location: "Corner of Oak and Pine",
-    category: "Public Safety",
-    createdAt: "2023-11-25",
-    inPolling: false,
-  },
-  {
-    id: 3,
-    title: "Graffiti in Park",
-    status: "Resolved",
-    description: "Graffiti on playground equipment",
-    location: "Central Park",
-    category: "Community Services",
-    createdAt: "2023-11-20",
-    inPolling: false,
-  },
-  {
-    id: 4,
-    title: "Noise Complaint",
-    status: "Open",
-    description: "Loud music from neighbor",
-    location: "456 Elm St",
-    category: "Public Safety",
-    createdAt: "2023-11-30",
-    inPolling: true,
-    votes: { up: 8, down: 2 },
-  },
-  {
-    id: 5,
-    title: "Trash Collection Delay",
-    status: "In Progress",
-    description: "Garbage not collected for a week",
-    location: "Maple Avenue",
-    category: "Community Services",
-    createdAt: "2023-11-27",
-    inPolling: false,
-  },
-];
-
-const IssueCard = ({ issue }) => {
+const IssueCard = ({ issue, onIssueUpdate }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleVote = (voteType) => {
-    // Simulate API call to update vote
-    toast({
-      title: "Vote Recorded",
-      description: `You've ${
-        voteType === "up" ? "supported" : "opposed"
-      } this issue.`,
-    });
+  const handleVote = async (voteType) => {
+    try {
+      const response = await fetch(`/api/issues/${issue._id}/vote`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ voteType }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to record vote');
+      }
+
+      toast({
+        title: "Vote Recorded",
+        description: `You've ${voteType === "up" ? "supported" : "opposed"} this issue.`,
+      });
+
+      // Notify parent to refresh issues
+      onIssueUpdate();
+    } catch (error) {
+      console.error('Error recording vote:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to record vote. Please try again later.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -190,139 +157,183 @@ const IssueCard = ({ issue }) => {
 };
 
 export default function IssuesPage() {
-  const [issues, setIssues] = useState(mockIssues);
+  const { user, isLoaded, isSignedIn } = useUser();
+  const [issues, setIssues] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortOrder, setSortOrder] = useState("desc");
+  const { toast } = useToast();
+
+  const fetchIssues = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/issues');
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to fetch issues');
+      }
+
+      const data = await response.json();
+      setIssues(data.issues || []);
+    } catch (error) {
+      console.error('Error fetching issues:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to load issues. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    let filteredIssues = mockIssues;
+    if (isLoaded && isSignedIn) {
+      fetchIssues();
+    }
+  }, [isLoaded, isSignedIn]);
 
+  const filteredAndSortedIssues = useMemo(() => {
+    let filtered = [...issues];
+
+    // Apply search filter
     if (searchTerm) {
-      filteredIssues = filteredIssues.filter(
+      filtered = filtered.filter(
         (issue) =>
           issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           issue.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
+    // Apply category filter
     if (selectedCategory !== "All") {
-      filteredIssues = filteredIssues.filter(
+      filtered = filtered.filter(
         (issue) => issue.category === selectedCategory
       );
     }
 
-    filteredIssues.sort((a, b) => {
+    // Apply sorting
+    filtered.sort((a, b) => {
       const dateA = new Date(a.createdAt).getTime();
       const dateB = new Date(b.createdAt).getTime();
       return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
     });
 
-    setIssues(filteredIssues);
-  }, [searchTerm, selectedCategory, sortOrder]);
+    return filtered;
+  }, [issues, searchTerm, selectedCategory, sortOrder]);
+
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isSignedIn) {
+    return (
+      <div className="text-center py-10">
+        <h2 className="text-2xl font-bold mb-4">Please sign in to view issues</h2>
+        <SignInButton mode="modal">
+          <Button>Sign In</Button>
+        </SignInButton>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full bg-gray-50">
       <div className="container mx-auto p-6">
         <h1 className="text-3xl font-bold mb-6">Community Issues</h1>
 
-        <div className="mb-6 flex flex-col md:flex-row gap-4">
-          <div className="flex-grow">
-            <Input
-              placeholder="Search issues..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full"
-              icon={<Search className="h-4 w-4 text-gray-500" />}
-            />
-          </div>
-          <div className="flex gap-2">
-            <Select
-              value={selectedCategory}
-              onValueChange={setSelectedCategory}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All Categories</SelectItem>
-                <SelectItem value="Infrastructure">Infrastructure</SelectItem>
-                <SelectItem value="Public Safety">Public Safety</SelectItem>
-                <SelectItem value="Community Services">
-                  Community Services
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-            >
-              {sortOrder === "asc" ? (
-                <SortAsc className="h-4 w-4" />
-              ) : (
-                <SortDesc className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
-        </div>
+        {isLoading ? (
+          <div className="text-center py-10">Loading issues...</div>
+        ) : (
+          <>
+            <div className="mb-6 flex flex-col md:flex-row gap-4">
+              <div className="flex-grow">
+                <Input
+                  placeholder="Search issues..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full"
+                  icon={<Search className="h-4 w-4 text-gray-500" />}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Select
+                  value={selectedCategory}
+                  onValueChange={setSelectedCategory}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All Categories</SelectItem>
+                    <SelectItem value="Infrastructure">Infrastructure</SelectItem>
+                    <SelectItem value="Public Safety">Public Safety</SelectItem>
+                    <SelectItem value="Community Services">
+                      Community Services
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                >
+                  {sortOrder === "asc" ? (
+                    <SortAsc className="h-4 w-4" />
+                  ) : (
+                    <SortDesc className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
 
-        <Tabs defaultValue="all" className="mb-6">
-          <TabsList>
-            <TabsTrigger value="all">All Issues</TabsTrigger>
-            <TabsTrigger value="open">Open</TabsTrigger>
-            <TabsTrigger value="in-progress">In Progress</TabsTrigger>
-            <TabsTrigger value="resolved">Resolved</TabsTrigger>
-          </TabsList>
-          <TabsContent value="all">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {issues.map((issue) => (
-                <IssueCard key={issue.id} issue={issue} />
+            <Tabs defaultValue="all" className="mb-6">
+              <TabsList>
+                <TabsTrigger value="all">All Issues</TabsTrigger>
+                <TabsTrigger value="open">Open</TabsTrigger>
+                <TabsTrigger value="in-progress">In Progress</TabsTrigger>
+                <TabsTrigger value="resolved">Resolved</TabsTrigger>
+              </TabsList>
+
+              {["all", "open", "in-progress", "resolved"].map((tab) => (
+                <TabsContent key={tab} value={tab}>
+                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {filteredAndSortedIssues
+                      .filter(issue =>
+                        tab === "all" ||
+                        (tab === "open" && issue.status === "Open") ||
+                        (tab === "in-progress" && issue.status === "In Progress") ||
+                        (tab === "resolved" && issue.status === "Resolved")
+                      )
+                      .map((issue) => (
+                        <IssueCard
+                          key={issue._id}
+                          issue={issue}
+                          onIssueUpdate={fetchIssues}
+                        />
+                      ))}
+                  </div>
+                </TabsContent>
               ))}
-            </div>
-          </TabsContent>
-          <TabsContent value="open">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {issues
-                .filter((issue) => issue.status === "Open")
-                .map((issue) => (
-                  <IssueCard key={issue.id} issue={issue} />
-                ))}
-            </div>
-          </TabsContent>
-          <TabsContent value="in-progress">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {issues
-                .filter((issue) => issue.status === "In Progress")
-                .map((issue) => (
-                  <IssueCard key={issue.id} issue={issue} />
-                ))}
-            </div>
-          </TabsContent>
-          <TabsContent value="resolved">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {issues
-                .filter((issue) => issue.status === "Resolved")
-                .map((issue) => (
-                  <IssueCard key={issue.id} issue={issue} />
-                ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+            </Tabs>
 
-        {issues.length === 0 && (
-          <p className="text-center text-gray-500 mt-8">
-            No issues found matching your criteria.
-          </p>
+            {filteredAndSortedIssues.length === 0 && (
+              <p className="text-center text-gray-500 mt-8">
+                No issues found matching your criteria.
+              </p>
+            )}
+
+            <div className="mt-8 text-center">
+              <Button asChild>
+                <Link href="/report-issue">
+                  Report a New Issue <ChevronRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </>
         )}
-
-        <div className="mt-8 text-center">
-          <Button asChild>
-            <Link href="/report-issue">
-              Report a New Issue <ChevronRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
       </div>
     </div>
   );

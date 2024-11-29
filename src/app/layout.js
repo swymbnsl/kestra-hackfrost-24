@@ -2,6 +2,13 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Sidebar from "@/components/shared/sidebar";
 import { Toaster } from "@/components/ui/toaster";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -15,22 +22,30 @@ const geistMono = localFont({
 });
 
 export const metadata = {
-  title: "Kestra App",
-  description: "Madeby Team Hare Krishna",
+  title: "SamajSeva",
+  description: "Made by Team Hare Krishna",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <div className="h-screen flex">
-          <Toaster />
-          <Sidebar />
-          {children}
-        </div>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          <div className="h-screen flex">
+            <Toaster />
+            <Sidebar />
+            {children}
+          </div>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
