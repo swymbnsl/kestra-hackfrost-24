@@ -45,10 +45,10 @@ export default function RootLayout({ children }) {
           <SignedIn>
             <UserButton />
           </SignedIn>
-          <div className="h-screen flex">
+          <div className="h-screen w-screen flex">
             <Toaster />
             <Sidebar />
-            {children}
+            <div className="overflow-auto h-full w-full">{children}</div>
           </div>
         </body>
       </html>

@@ -10,7 +10,7 @@ import {
   MessageCircle,
   Settings,
   TriangleAlert,
-  Users,
+  Users
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -29,7 +29,7 @@ export default function Sidebar() {
   const navUnselectedStyles = "bg-transparent px-3 py-2 text-zinc-400";
 
   return (
-    <div className="hidden w-64 min-h-screen flex-col bg-zinc-900 p-4 md:flex">
+    <div className="hidden w-64 min-h-screen h-full flex-col bg-zinc-900 p-4 md:flex">
       <div className="flex items-center gap-2 px-2 py-4">
         <Image
           src="/globe.svg"
