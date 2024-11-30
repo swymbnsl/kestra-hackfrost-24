@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import {
@@ -9,14 +9,14 @@ import {
   ThumbsDown,
   ThumbsUp,
   SortAsc,
-  SortDesc,
+  SortDesc
 } from "lucide-react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
@@ -34,7 +34,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -43,14 +43,14 @@ const IssueCard = ({ issue, onIssueUpdate }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleVote = async (voteType) => {
+  const handleVote = async voteType => {
     try {
       const response = await fetch(`/api/issues/${issue._id}/vote`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ voteType }),
+        body: JSON.stringify({ voteType })
       });
 
       if (!response.ok) {
@@ -62,7 +62,7 @@ const IssueCard = ({ issue, onIssueUpdate }) => {
         title: "Vote Recorded",
         description: `You've ${
           voteType === "up" ? "supported" : "opposed"
-        } this issue.`,
+        } this issue.`
       });
 
       // Notify parent to refresh issues
@@ -73,7 +73,7 @@ const IssueCard = ({ issue, onIssueUpdate }) => {
         title: "Error",
         description:
           error.message || "Failed to record vote. Please try again later.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
@@ -168,7 +168,7 @@ export default function IssuesPage() {
   const [sortOrder, setSortOrder] = useState("desc");
   const { toast } = useToast();
 
-  const fetchIssues = async () => {
+  const fetchIssues = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch("/api/issues");
@@ -186,18 +186,18 @@ export default function IssuesPage() {
         title: "Error",
         description:
           error.message || "Failed to load issues. Please try again later.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     if (isLoaded && isSignedIn) {
       fetchIssues();
     }
-  }, [isLoaded, isSignedIn]);
+  }, [isLoaded, isSignedIn, fetchIssues]);
 
   const filteredAndSortedIssues = useMemo(() => {
     let filtered = [...issues];
@@ -205,7 +205,7 @@ export default function IssuesPage() {
     // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(
-        (issue) =>
+        issue =>
           issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           issue.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -213,9 +213,7 @@ export default function IssuesPage() {
 
     // Apply category filter
     if (selectedCategory !== "All") {
-      filtered = filtered.filter(
-        (issue) => issue.category === selectedCategory
-      );
+      filtered = filtered.filter(issue => issue.category === selectedCategory);
     }
 
     // Apply sorting
@@ -259,7 +257,7 @@ export default function IssuesPage() {
                 <Input
                   placeholder="Search issues..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   className="w-full"
                   icon={<Search className="h-4 w-4 text-gray-500" />}
                 />
@@ -307,19 +305,19 @@ export default function IssuesPage() {
                 <TabsTrigger value="resolved">Resolved</TabsTrigger>
               </TabsList>
 
-              {["all", "open", "in-progress", "resolved"].map((tab) => (
+              {["all", "open", "in-progress", "resolved"].map(tab => (
                 <TabsContent key={tab} value={tab}>
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {filteredAndSortedIssues
                       .filter(
-                        (issue) =>
+                        issue =>
                           tab === "all" ||
                           (tab === "open" && issue.status === "Open") ||
                           (tab === "in-progress" &&
                             issue.status === "In Progress") ||
                           (tab === "resolved" && issue.status === "Resolved")
                       )
-                      .map((issue) => (
+                      .map(issue => (
                         <IssueCard
                           key={issue._id}
                           issue={issue}

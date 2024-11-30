@@ -7,24 +7,28 @@ import {
   SignInButton,
   SignedIn,
   SignedOut,
-  UserButton,
+  UserButton
 } from "@clerk/nextjs";
+import { GrammarlyFix } from "@/components/shared/GrammarlyFix";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
-  weight: "100 900",
+  weight: "100 900"
 });
+
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
-  weight: "100 900",
+  weight: "100 900"
 });
 
 export const metadata = {
   title: "SamajSeva",
-  description: "Made by Team Hare Krishna",
+  description: "Made by Team Hare Krishna"
 };
+
+// Client component to handle Grammarly attributes
 
 export default function RootLayout({ children }) {
   return (
@@ -32,7 +36,9 @@ export default function RootLayout({ children }) {
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          data-enable-grammarly="false"
         >
+          <GrammarlyFix />
           <SignedOut>
             <SignInButton />
           </SignedOut>
