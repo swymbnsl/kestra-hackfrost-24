@@ -10,9 +10,11 @@ import {
   MessageCircle,
   Settings,
   TriangleAlert,
-  Users
+  Users,
+  LogOut
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SignOutButton } from "@clerk/nextjs";
 
 import Link from "next/link";
 import React from "react";
@@ -29,7 +31,7 @@ export default function Sidebar() {
   const navUnselectedStyles = "bg-transparent px-3 py-2 text-zinc-400";
 
   return (
-    <div className="hidden w-64 min-h-screen h-full flex-col bg-zinc-900 p-4 md:flex">
+    <div className="hidden w-64 min-h-screen flex-col bg-zinc-900 p-4 md:flex">
       <div className="flex items-center gap-2 px-2 py-4">
         <Image
           src="/globe.svg"
@@ -97,16 +99,12 @@ export default function Sidebar() {
           <Bell className="h-5 w-5" />
           Notifications
         </Link>
-        <Link
-          href="#"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-400 transition-colors hover:text-zinc-200"
-        >
-          <Avatar className="w-7 h-7">
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          Swayam
-        </Link>
+        <SignOutButton>
+          <button className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-400 transition-colors hover:text-zinc-200">
+            <LogOut className="h-5 w-5" />
+            Sign Out
+          </button>
+        </SignOutButton>
       </nav>
     </div>
   );

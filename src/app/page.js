@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -20,8 +21,17 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
+import {
+  SignInButton,
+  SignUpButton,
+  SignOutButton,
+  useAuth
+} from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
   return (
     <div className="flex flex-col w-screen min-h-screen">
       {/* Hero Section */}
@@ -39,12 +49,29 @@ export default function LandingPage() {
                 automation.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" asChild>
-                  <Link href="/register">Join Your Community</Link>
-                </Button>
-                <Button size="lg" variant="outline" asChild>
-                  <Link href="/about">Learn More</Link>
-                </Button>
+                {isSignedIn ? (
+                  <>
+                    <Button size="lg" onClick={() => router.push("/dashboard")}>
+                      Continue to Dashboard
+                    </Button>
+                    <SignOutButton>
+                      <Button size="lg" variant="outline">
+                        Sign Out
+                      </Button>
+                    </SignOutButton>
+                  </>
+                ) : (
+                  <>
+                    <SignInButton mode="modal" forceRedirectUrl="/dashboard">
+                      <Button size="lg">Sign In</Button>
+                    </SignInButton>
+                    <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
+                      <Button size="lg" variant="outline">
+                        Register
+                      </Button>
+                    </SignUpButton>
+                  </>
+                )}
               </div>
             </div>
             <div className="relative">
@@ -243,9 +270,19 @@ export default function LandingPage() {
             Join thousands of community members making a difference every day
             with our Kestra-powered platform.
           </p>
-          <Button size="lg" className="mr-4">
-            Get Started with Kestra <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          {isSignedIn ? (
+            <Button size="lg" onClick={() => router.push("/dashboard")}>
+              Continue to Dashboard
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          ) : (
+            <SignUpButton mode="modal" afterSignUpUrl="/dashboard">
+              <Button size="lg">
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </SignUpButton>
+          )}
         </div>
       </section>
 

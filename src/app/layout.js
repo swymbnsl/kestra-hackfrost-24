@@ -2,14 +2,10 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Sidebar from "@/components/shared/sidebar";
 import { Toaster } from "@/components/ui/toaster";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton
-} from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import { GrammarlyFix } from "@/components/shared/GrammarlyFix";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import ProfileButton from "@/components/ui/ProfileButton";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,28 +24,23 @@ export const metadata = {
   description: "Made by Team Hare Krishna"
 };
 
-// Client component to handle Grammarly attributes
-
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           data-enable-grammarly="false"
         >
-          <GrammarlyFix />
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-          <div className="h-screen w-screen flex">
-            <Toaster />
-            <Sidebar />
-            <div className="overflow-auto h-full w-full">{children}</div>
-          </div>
+          <ThemeProvider>
+            <GrammarlyFix />
+            <div className="h-screen flex">
+              <Toaster />
+              <Sidebar />
+
+              {children}
+            </div>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
