@@ -11,8 +11,8 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { NotificationsDialog } from "@/components/admin-notifications";
 
 // Mock data for demonstration
 const communityStats = {
@@ -44,14 +44,54 @@ const recentActivity = [
   }
 ];
 
+const mockNotifications = [
+  {
+    id: "1",
+    type: "info",
+    title: "New Member Joined",
+    description: "John Doe has joined the community.",
+    date: new Date("2023-11-30T10:00:00"),
+    read: false
+  },
+  {
+    id: "2",
+    type: "warning",
+    title: "Report Flagged",
+    description: "A new issue report has been flagged for review.",
+    date: new Date("2023-11-29T15:30:00"),
+    read: false
+  },
+  {
+    id: "3",
+    type: "success",
+    title: "Poll Completed",
+    description: 'The "Park Renovation" poll has concluded.',
+    date: new Date("2023-11-28T09:45:00"),
+    read: true
+  }
+];
+
 export default function AdminDashboard() {
   const [participationRate, setParticipationRate] = useState(
     communityStats.participationRate
   );
+  const [notifications, setNotifications] = useState(mockNotifications);
+
+  const handleNotificationRead = id => {
+    setNotifications(
+      notifications.map(n => (n.id === id ? { ...n, read: true } : n))
+    );
+  };
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <NotificationsDialog
+          notifications={notifications}
+          onNotificationRead={handleNotificationRead}
+        />
+      </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
         <Card>

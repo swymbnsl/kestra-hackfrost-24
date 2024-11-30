@@ -9,17 +9,23 @@ import {
   MessageSquare,
   PieChart,
   Plus,
+  Users,
+  Calendar,
+  Zap
 } from "lucide-react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { CommunityNotificationsDialog } from "@/components/members-notifications";
 
 // Mock data for demonstration
 const userActivities = [
@@ -28,35 +34,101 @@ const userActivities = [
     type: "Issue Reported",
     title: "Pothole on Main St",
     status: "In Progress",
-    date: "2023-11-25",
+    date: "2023-11-25"
   },
   {
     id: 2,
     type: "Poll Participation",
     title: "Park Renovation",
     status: "Completed",
-    date: "2023-11-23",
+    date: "2023-11-23"
   },
   {
     id: 3,
     type: "Feedback Provided",
     title: "Community Center",
     status: "Received",
-    date: "2023-11-20",
-  },
+    date: "2023-11-20"
+  }
 ];
 
 const activePolls = [
   { id: 1, title: "New Bike Lanes", endDate: "2023-12-15" },
-  { id: 2, title: "Community Garden Location", endDate: "2023-12-20" },
+  { id: 2, title: "Community Garden Location", endDate: "2023-12-20" }
+];
+
+const upcomingEvents = [
+  { id: 1, title: "Town Hall Meeting", date: "2023-12-05", time: "19:00" },
+  { id: 2, title: "Community Cleanup Day", date: "2023-12-10", time: "09:00" }
+];
+
+const mockNotifications = [
+  {
+    id: "1",
+    type: "issue_update",
+    title: "Pothole Update",
+    description: "The pothole on Main St has been scheduled for repair.",
+    date: new Date("2023-11-30T10:00:00"),
+    read: false
+  },
+  {
+    id: "2",
+    type: "poll_result",
+    title: "Park Renovation Results",
+    description: "The results for the Park Renovation poll are now available.",
+    date: new Date("2023-11-29T15:30:00"),
+    read: false
+  },
+  {
+    id: "3",
+    type: "new_issue",
+    title: "New Issue Reported",
+    description:
+      'A new issue "Broken Streetlight" has been reported in your area.',
+    date: new Date("2023-11-28T09:45:00"),
+    read: true
+  },
+  {
+    id: "4",
+    type: "community_update",
+    title: "Community Meeting",
+    description: "Reminder: Community town hall meeting this Saturday.",
+    date: new Date("2023-11-27T14:00:00"),
+    read: false
+  }
 ];
 
 export default function UserDashboard() {
   const [progress, setProgress] = useState(66);
+  const [notifications, setNotifications] = useState(mockNotifications);
+
+  const handleNotificationRead = id => {
+    setNotifications(
+      notifications.map(n => (n.id === id ? { ...n, read: true } : n))
+    );
+  };
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Welcome, Community Member!</h1>
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center space-x-4">
+          <Avatar className="h-12 w-12">
+            <AvatarImage
+              src="/placeholder.svg?height=40&width=40"
+              alt="User avatar"
+            />
+            <AvatarFallback>JD</AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 className="text-3xl font-bold">Welcome, John Doe!</h1>
+            <p className="text-muted-foreground">Active Community Member</p>
+          </div>
+        </div>
+        <CommunityNotificationsDialog
+          notifications={notifications}
+          onNotificationRead={handleNotificationRead}
+        />
+      </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -100,7 +172,7 @@ export default function UserDashboard() {
             <CardTitle className="text-sm font-medium">
               Engagement Score
             </CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            <Zap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">Good</div>
@@ -109,8 +181,8 @@ export default function UserDashboard() {
         </Card>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 mt-6">
-        <Card className="col-span-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6">
+        <Card className="col-span-2">
           <CardHeader>
             <CardTitle>Recent Activities</CardTitle>
           </CardHeader>
@@ -124,7 +196,7 @@ export default function UserDashboard() {
               </TabsList>
               <TabsContent value="all">
                 <ul className="space-y-4 mt-4">
-                  {userActivities.map((activity) => (
+                  {userActivities.map(activity => (
                     <li
                       key={activity.id}
                       className="flex justify-between items-center"
@@ -135,17 +207,17 @@ export default function UserDashboard() {
                           {activity.type} - {activity.date}
                         </p>
                       </div>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs ${
+                      <Badge
+                        variant={
                           activity.status === "Completed"
-                            ? "bg-green-100 text-green-800"
+                            ? "success"
                             : activity.status === "In Progress"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-blue-100 text-blue-800"
-                        }`}
+                            ? "warning"
+                            : "default"
+                        }
                       >
                         {activity.status}
-                      </span>
+                      </Badge>
                     </li>
                   ))}
                 </ul>
@@ -155,9 +227,9 @@ export default function UserDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="col-span-3">
+        <Card>
           <CardHeader>
-            <CardTitle>Quick Links</CardTitle>
+            <CardTitle>Quick Actions</CardTitle>
             <CardDescription>
               Access key features and information
             </CardDescription>
@@ -180,8 +252,8 @@ export default function UserDashboard() {
               </Link>
             </Button>
             <Button asChild variant="outline" className="w-full justify-start">
-              <Link href="/notifications">
-                <Bell className="mr-2 h-4 w-4" /> View Notifications
+              <Link href="/community-events">
+                <Calendar className="mr-2 h-4 w-4" /> View Community Events
               </Link>
             </Button>
             <Button asChild variant="outline" className="w-full justify-start">
@@ -193,29 +265,58 @@ export default function UserDashboard() {
         </Card>
       </div>
 
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Active Polls</CardTitle>
-          <CardDescription>
-            Make your voice heard in the community
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-4">
-            {activePolls.map((poll) => (
-              <li key={poll.id} className="flex justify-between items-center">
-                <div>
-                  <p className="font-medium">{poll.title}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Ends on {poll.endDate}
-                  </p>
-                </div>
-                <Button size="sm">Vote Now</Button>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
+      <div className="grid gap-6 md:grid-cols-2 mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Active Polls</CardTitle>
+            <CardDescription>
+              Make your voice heard in the community
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-4">
+              {activePolls.map(poll => (
+                <li key={poll.id} className="flex justify-between items-center">
+                  <div>
+                    <p className="font-medium">{poll.title}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Ends on {poll.endDate}
+                    </p>
+                  </div>
+                  <Button size="sm">Vote Now</Button>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Upcoming Community Events</CardTitle>
+            <CardDescription>Stay involved in your community</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-4">
+              {upcomingEvents.map(event => (
+                <li
+                  key={event.id}
+                  className="flex justify-between items-center"
+                >
+                  <div>
+                    <p className="font-medium">{event.title}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {event.date} at {event.time}
+                    </p>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    RSVP
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
