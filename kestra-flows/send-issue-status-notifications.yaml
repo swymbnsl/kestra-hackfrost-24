@@ -1,0 +1,36 @@
+id: notify-issue-changes
+namespace: hackfrost
+triggers:
+  - id: notify-issue-changes-trigger
+    type: io.kestra.plugin.core.trigger.Webhook
+    key: autocomm
+inputs:
+  - id: emails
+    itemType: STRING
+    type: ARRAY
+    defaults: [prathamjagga123@gmail.com]
+  - id: name
+    type: STRING
+    defaults: NEW_ISSUE
+  - id: status
+    type: STRING
+    defaults: CREATED
+tasks:
+  - id: hello
+    type: io.kestra.plugin.core.log.Log
+    message: emails are, {{ trigger.body }}
+  - id: send-emails
+    type: io.kestra.plugin.core.flow.ForEach
+    values: "{{trigger.body.inputs.emails}}"
+    tasks:
+      - id: send-single-email
+        type: io.kestra.plugin.notifications.mail.MailSend
+        from: prathamjagga123@gmail.com
+        to: "{{taskrun.value}}"
+        username: prathamjagga123@gmail.com
+        password: umih qkxc oysc bglm
+        host: smtp.gmail.com
+        port: 465
+        subject: Update on AutoComm Issue
+        htmlTextContent: |
+          <!doctypehtml><html lang=en><meta charset=UTF-8><meta content="width=device-width,initial-scale=1"name=viewport><title>AutoComm (Hackfrost 2024)</title><body style=margin:0;padding:0;font-family:Arial,sans-serif;background-color:#f4f4f4><table role=presentation style=width:100%;border-collapse:collapse><tr><td style="padding:40px 0"align=center><table role=presentation style="width:600px;border-collapse:collapse;border:1px solid #ccc;background-color:#fff"><tr><td style="padding:40px 0;background-color:#000"align=center><h1 style=color:#fff;font-size:24px;margin:0>AutoComm for Hackfrost</h1><tr><td style="padding:40px 30px"><h2 style=color:#000;font-size:20px>Hello There</h2><p style=color:#000;font-size:16px;line-height:1.5>This email is regarding update to an issue on Autocomm.<p style=color:#000;font-size:16px;line-height:1.5>The issue {{trigger.body.inputs.name}}'s status is changed to {{trigger.body.inputs.status}}<tr><td style="padding:30px 0"align=center><a href=# style="background-color:#000;color:#fff;padding:12px 20px;text-decoration:none;font-weight:700;display:inline-block">Go to issue Dashboard</a><tr><td style="padding:20px 0;background-color:#f4f4f4"align=center><p style=color:#000;font-size:14px;margin:0>Autocomm for Hackfrost 2024<p style="color:#000;font-size:14px;margin:10px 0 0"><a href=# style=color:#000;text-decoration:underline>Unsubscribe</a> | <a href=# style=color:#000;text-decoration:underline>View in Browser</a></table></table>
