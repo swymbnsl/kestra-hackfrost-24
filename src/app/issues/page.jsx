@@ -159,6 +159,7 @@ const IssueCard = ({ issue, onIssueUpdate }) => {
 };
 
 export default function IssuesPage() {
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [issues, setIssues] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
