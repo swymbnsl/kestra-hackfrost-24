@@ -29,6 +29,13 @@ import {
   useAuth
 } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import {
+  SignInButton,
+  SignUpButton,
+  SignOutButton,
+  useAuth
+} from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
   const { isSignedIn } = useAuth();
