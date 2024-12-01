@@ -77,7 +77,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="relative">
-              <div className="relative h-[400px] w-full">
+              {/* <div className="relative h-[400px] w-full">
                 <Image
                   src="/placeholder.svg?height=400&width=600"
                   alt="Community Platform Preview"
@@ -85,7 +85,7 @@ export default function LandingPage() {
                   className="object-cover rounded-lg shadow-2xl"
                   priority
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

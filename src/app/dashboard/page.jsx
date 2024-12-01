@@ -121,7 +121,10 @@ export default function UserDashboard() {
           </Avatar>
           <div>
             <h1 className="text-3xl font-bold">Welcome, John Doe!</h1>
-            <p className="text-muted-foreground">Active Community Member</p>
+            <p className="text-muted-foreground">
+              This page shows the summary of your community generated using
+              Kestra
+            </p>
           </div>
         </div>
         <CommunityNotificationsDialog
@@ -283,7 +286,30 @@ export default function UserDashboard() {
                       Ends on {poll.endDate}
                     </p>
                   </div>
-                  <Button size="sm">Vote Now</Button>
+                  <Button
+                    onClick={() => {
+                      alert("Your vote is submitted");
+                    }}
+                    size="sm"
+                  >
+                    Yes
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      alert("Your vote is submitted");
+                    }}
+                    size="sm"
+                  >
+                    No
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      alert("Poll has been ended");
+                    }}
+                    size="sm"
+                  >
+                    End Poll
+                  </Button>
                 </li>
               ))}
             </ul>

@@ -1,0 +1,46 @@
+id: admin-daily-analysis-workflow
+namespace: community-engagement
+description:
+  "Daily workflow to fetch issues and polls, analyze them, and save results."
+triggers:
+  - id: daily-schedule
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "0 0 * * *" # Runs every day at 12 AM
+
+tasks:
+  - id: fetch_issues
+    type: io.kestra.plugin.mongodb.Find
+    connection:
+      uri: mongodb+srv://sakshamguptaai:b00fiK3AJtp3pAi7@cluster0.wrq20.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+    database: test
+    collection: "issues"
+
+  - id: fetch_polls
+    type: io.kestra.plugin.mongodb.Find
+    connection:
+      uri: mongodb+srv://sakshamguptaai:b00fiK3AJtp3pAi7@cluster0.wrq20.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+    database: test
+    collection: "polls"
+
+  - id: log_input
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      {"contents": [{"parts": [{"text": "I have a community website for my society, where users add their issues and also add polls, generate a dummy analysis of polls and issues on the website which I can show on the admin dashboard"}]}]}
+
+  - id: analyse_data_using_gemini
+    type: io.kestra.plugin.core.http.Request
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBVENkZ_kimALTRcGTv0iD30m_T6wVO9ho
+    method: POST
+    contentType: application/json
+    body: |
+      {"contents": [{"parts": [{"text": "I have a community website for my society, where users add their issues and also add polls, write a dummy analysis of polls and issues on the website which I can show on the admin dashboard. i want you to write the content of it . do not write any code or anything."}]}]}
+
+  - id: save-results
+
+    type: io.kestra.plugin.mongodb.InsertOne
+    connection:
+      uri: mongodb+srv://sakshamguptaai:b00fiK3AJtp3pAi7@cluster0.wrq20.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+    database: "test"
+    collection: "admin_dashboard_data"
+    document:
+      analysisResults: "{{ outputs.analyse_data_using_gemini.body}}"
