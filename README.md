@@ -1,4 +1,4 @@
-# Data-Driven Community Engagement Platform
+# SamajSeva: A Data-Driven Community Engagement Platform
 
 ## Overview
 
@@ -41,7 +41,7 @@ Before you begin, ensure you have the following installed:
 
 Navigate to both the frontend and backend directories and install dependencies:
 
-```bash
+````bash
 cd frontend
 npm install
 
@@ -59,7 +59,7 @@ npm install
 2. **DATABASE_URL=your_database_url**
 JWT_SECRET=your_jwt_secret
 EMAIL_SERVICE=your_email_service
-   
+
 - npm run migrate
 
 3. **Start the Application**
@@ -70,3 +70,4 @@ npm start
 # In another terminal for frontend:
 cd frontend
 npm start
+````
