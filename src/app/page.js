@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -32,6 +33,7 @@ import { useRouter } from "next/navigation";
 export default function LandingPage() {
   const { isSignedIn } = useAuth();
   const router = useRouter();
+
   return (
     <div className="flex flex-col w-screen min-h-screen">
       {/* Hero Section */}
@@ -75,7 +77,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="relative">
-              <div className="relative h-[400px] w-full">
+              {/* <div className="relative h-[400px] w-full">
                 <Image
                   src="/placeholder.svg?height=400&width=600"
                   alt="Community Platform Preview"
@@ -83,7 +85,7 @@ export default function LandingPage() {
                   className="object-cover rounded-lg shadow-2xl"
                   priority
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

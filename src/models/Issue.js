@@ -3,50 +3,62 @@ import mongoose from 'mongoose';
 const IssueSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true
+    required: [true, 'Title is required'],
+    trim: true,
   },
   description: {
     type: String,
-    required: true
+    required: [true, 'Description is required'],
   },
   location: {
     type: String,
-    required: true
+    required: [true, 'Location is required'],
   },
   category: {
     type: String,
-    required: true
+    required: [true, 'Category is required'],
+    enum: ['Infrastructure', 'Safety', 'Environmental', 'Other'], // customize as needed
   },
   status: {
     type: String,
-    enum: ['Open', 'In Progress', 'Resolved'],
-    default: 'Open'
+    enum: ['Open', 'In Progress', 'Resolved', 'Closed'],
+    default: 'Open',
   },
-  createdBy: {
+  attachments: [{
+    url: String,
     type: String,
-    required: true
+    filename: String,
+  }],
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
+  assignedTo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  votes: {
+    up: { type: Number, default: 0 },
+    down: { type: Number, default: 0 },
   },
   inPolling: {
     type: Boolean,
-    default: false
+    default: false,
   },
-  votes: {
-    up: {
-      type: Number,
-      default: 0
+  comments: [{
+    text: String,
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     },
-    down: {
-      type: Number,
-      default: 0
-    }
-  }
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  }],
+}, {
+  timestamps: true,
 });
 
-// Prevent duplicate model compilation
-const IssueModel = mongoose.models.Issue || mongoose.model('Issue', IssueSchema);
-
-export default IssueModel;
+export default mongoose.models.Issue || mongoose.model('Issue', IssueSchema);

@@ -38,34 +38,21 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-    // Get the auth context
-    const { userId } = getAuth(request);
+    const { userId, mongoUser } = getAuth(request);
 
-    if (!userId) {
+    if (!userId || !mongoUser) {
       return NextResponse.json(
         { success: false, message: 'Not authenticated' },
         { status: 401 }
       );
     }
 
-    // Connect to the database
     await dbConnect();
-
-    // Parse the request body
     const issueData = await request.json();
 
-    // Validate required fields
-    if (!issueData.title || !issueData.description || !issueData.location || !issueData.category) {
-      return NextResponse.json(
-        { success: false, message: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
-
-    // Create new issue with user reference
     const newIssue = await IssueModel.create({
       ...issueData,
-      createdBy: userId, // Using Clerk's userId directly
+      createdBy: mongoUser._id, // Now using MongoDB user ID
       status: 'Open',
       inPolling: false,
       votes: { up: 0, down: 0 },

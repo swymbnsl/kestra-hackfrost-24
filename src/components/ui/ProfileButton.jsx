@@ -1,4 +1,5 @@
 import { UserButton } from "@clerk/nextjs";
+
 const ProfileButton = () => {
   return (
     <div className="relative">
@@ -13,4 +14,5 @@ const ProfileButton = () => {
     </div>
   );
 };
+
 export default ProfileButton;

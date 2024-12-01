@@ -1,0 +1,28 @@
+# get issue from db, generate its summary and push to db
+# AIzaSyBVENkZ_kimALTRcGTv0iD30m_T6wVO9ho gemini key
+id: generate-issue-summary
+namespace: hackfrost
+inputs:
+  - id: db_uri
+    type: STRING
+    defaults: mongodb+srv://pratham:pratham@cluster0.6b0ku.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+triggers:
+  - id: get-issue-from-db
+    type: io.kestra.plugin.mongodb.Trigger
+    connection:
+      uri: mongodb+srv://pratham:pratham@cluster0.6b0ku.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+    database: "test"
+    collection: "issues"
+    interval: "PT1H"
+    filter: { name: "Parass" }
+tasks:
+  - id: process_new_issue
+    type: io.kestra.plugin.core.log.Log
+    message: "New issue added"
+  - id: get_summary_from_gemini
+    type: io.kestra.plugin.core.http.Request
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBVENkZ_kimALTRcGTv0iD30m_T6wVO9ho
+    method: POST
+    contentType: application/json
+    body: |
+      {"contents": [{"parts": [{"text": "Explain how AI works"}]}]}
