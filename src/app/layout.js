@@ -2,10 +2,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Sidebar from "@/components/shared/sidebar";
 import { Toaster } from "@/components/ui/toaster";
-import { ClerkProvider } from "@clerk/nextjs";
 import { GrammarlyFix } from "@/components/shared/GrammarlyFix";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import ProfileButton from "@/components/ui/ProfileButton";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,23 +24,22 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          data-enable-grammarly="false"
-        >
-          <ThemeProvider>
-            <GrammarlyFix />
-            <div className="h-screen flex">
-              <Toaster />
-              <Sidebar />
+    <html lang="en" suppressHydrationWarning>
+      <body
+        suppressHydrationWarning
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        data-enable-grammarly="false"
+      >
+        <ThemeProvider>
+          <GrammarlyFix />
+          <div className="h-screen flex">
+            <Toaster />
+            <Sidebar />
 
-              {children}
-            </div>
-          </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+            {children}
+          </div>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

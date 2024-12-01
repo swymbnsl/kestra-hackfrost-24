@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { SignInButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import {
   ChevronRight,
@@ -160,7 +159,7 @@ const IssueCard = ({ issue, onIssueUpdate }) => {
 };
 
 export default function IssuesPage() {
-  const { user, isLoaded, isSignedIn } = useUser();
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const [issues, setIssues] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -236,9 +235,7 @@ export default function IssuesPage() {
         <h2 className="text-2xl font-bold mb-4">
           Please sign in to view issues
         </h2>
-        <SignInButton mode="modal">
-          <Button>Sign In</Button>
-        </SignInButton>
+        <Button>Sign In</Button>
       </div>
     );
   }

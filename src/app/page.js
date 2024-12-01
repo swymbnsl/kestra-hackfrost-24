@@ -21,16 +21,11 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
-import {
-  SignInButton,
-  SignUpButton,
-  SignOutButton,
-  useAuth
-} from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LandingPage() {
-  const { isSignedIn } = useAuth();
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const router = useRouter();
   return (
     <div className="flex flex-col w-screen min-h-screen">
@@ -54,22 +49,35 @@ export default function LandingPage() {
                     <Button size="lg" onClick={() => router.push("/dashboard")}>
                       Continue to Dashboard
                     </Button>
-                    <SignOutButton>
-                      <Button size="lg" variant="outline">
-                        Sign Out
-                      </Button>
-                    </SignOutButton>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      onClick={() => {
+                        /* Add your sign out logic here */
+                      }}
+                    >
+                      Sign Out
+                    </Button>
                   </>
                 ) : (
                   <>
-                    <SignInButton mode="modal" forceRedirectUrl="/dashboard">
-                      <Button size="lg">Sign In</Button>
-                    </SignInButton>
-                    <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
-                      <Button size="lg" variant="outline">
-                        Register
-                      </Button>
-                    </SignUpButton>
+                    <Button
+                      size="lg"
+                      onClick={() => {
+                        /* Add your sign in logic here */
+                      }}
+                    >
+                      Sign In
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      onClick={() => {
+                        /* Add your register logic here */
+                      }}
+                    >
+                      Register
+                    </Button>
                   </>
                 )}
               </div>
@@ -276,12 +284,15 @@ export default function LandingPage() {
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           ) : (
-            <SignUpButton mode="modal" afterSignUpUrl="/dashboard">
-              <Button size="lg">
-                Get Started
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </SignUpButton>
+            <Button
+              size="lg"
+              onClick={() => {
+                /* Add your sign up logic here */
+              }}
+            >
+              Get Started
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
           )}
         </div>
       </section>
