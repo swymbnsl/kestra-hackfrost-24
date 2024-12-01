@@ -302,6 +302,14 @@ export default function UserDashboard() {
                   >
                     No
                   </Button>
+                  <Button
+                    onClick={() => {
+                      alert("Poll has been ended");
+                    }}
+                    size="sm"
+                  >
+                    End Poll
+                  </Button>
                 </li>
               ))}
             </ul>
