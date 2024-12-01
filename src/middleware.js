@@ -15,19 +15,6 @@ export default clerkMiddleware(
   },
   { debug: true }
 );
-const isPublicRoute = createRouteMatcher([
-  "/sign-in(.*)",
-  "/sign-up(.*)",
-  "/(.*)"
-]);
-export default clerkMiddleware(
-  async (auth, request) => {
-    if (!isPublicRoute(request)) {
-      await auth.protect();
-    }
-  },
-  { debug: true }
-);
 
 export const config = {
   matcher: [
